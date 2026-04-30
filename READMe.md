@@ -1,143 +1,143 @@
 # ATL Model Checker
 
-## Titolo del progetto
+## Project Title
 
 Strategic Verification of Open Systems using Alternating-time Temporal Logic
 
-## Obiettivo
+## Objective
 
-Questo progetto implementa un piccolo model checker per un frammento finito di ATL, Alternating-time Temporal Logic. L'obiettivo non è costruire un tool industriale completo, ma realizzare un prototipo leggibile e formalmente fondato che mostri come verificare proprietà strategiche di sistemi multi-agente.
+This project implements a small model checker for a finite fragment of ATL, Alternating-time Temporal Logic. The goal is not to build a complete industrial tool, but to create a readable and formally grounded prototype that shows how strategic properties of multi-agent systems can be verified.
 
-Il punto centrale è distinguere tra:
+The central point is to distinguish between:
 
-- verifica di percorsi, tipica di CTL;
-- verifica di strategie, tipica di ATL.
+- path verification, typical of CTL;
+- strategy verification, typical of ATL.
 
-In CTL si chiede, ad esempio, se esiste un cammino che raggiunge uno stato obiettivo. In ATL si chiede invece se una coalizione di agenti possiede una strategia per forzare il raggiungimento di tale obiettivo, indipendentemente dalle scelte degli altri agenti.
+In CTL, one may ask, for example, whether there exists a path that reaches a target state. In ATL, instead, one asks whether a coalition of agents has a strategy to force the achievement of that target, independently of the choices made by the other agents.
 
-## Motivazione teorica
+## Theoretical Motivation
 
-Il progetto si basa sull'idea che molti sistemi di interesse in intelligenza artificiale simbolica, verifica formale e sistemi multi-agente non siano sistemi chiusi, ma sistemi aperti. Un sistema aperto interagisce con un ambiente esterno, e il suo comportamento non dipende solo dalle decisioni interne, ma anche dalle decisioni dell'ambiente.
+The project is based on the idea that many systems of interest in symbolic artificial intelligence, formal verification and multi-agent systems are not closed systems, but open systems. An open system interacts with an external environment, and its behavior does not depend only on internal decisions, but also on the decisions of the environment.
 
-Per questo motivo, una semplice struttura di Kripke non è sufficiente a rappresentare esplicitamente chi controlla quale transizione. Il progetto utilizza quindi una Concurrent Game Structure, in cui ogni transizione dipende da una joint action, cioè dalla combinazione delle azioni scelte simultaneamente da tutti gli agenti.
+For this reason, a simple Kripke structure is not sufficient to explicitly represent who controls which transition. The project therefore uses a Concurrent Game Structure, where each transition depends on a joint action, namely the combination of actions chosen simultaneously by all agents.
 
-## Modello formale
+## Formal Model
 
-Il modello implementato è una Concurrent Game Structure finita.
+The implemented model is a finite Concurrent Game Structure.
 
-Una Concurrent Game Structure può essere vista come una tupla composta da:
+A Concurrent Game Structure can be seen as a tuple composed of:
 
-- un insieme finito di stati S;
-- un insieme finito di agenti Ag;
-- per ogni stato e agente, un insieme di azioni disponibili;
-- una funzione di transizione delta;
-- una funzione di labeling L che assegna a ogni stato le proposizioni atomiche vere in quello stato.
+- a finite set of states S;
+- a finite set of agents Ag;
+- for each state and agent, a set of available actions;
+- a transition function delta;
+- a labeling function L that assigns to each state the atomic propositions that are true in that state.
 
-Nel progetto, la funzione di transizione ha la forma:
+In the project, the transition function has the form:
 
     delta(state, joint_action) = next_state
 
-Dove una joint_action contiene una scelta per ogni agente.
+Where a joint_action contains one choice for each agent.
 
-Nel caso del modello dimostrativo:
+In the demonstration model:
 
     Agents = {Controller, Environment}
 
-Il Controller rappresenta l'agente che vogliamo verificare. L'Environment rappresenta l'ambiente esterno, potenzialmente avversario.
+The Controller represents the agent we want to verify. The Environment represents the external environment, which may be adversarial.
 
-## Stati del modello dimostrativo
+## States of the Demonstration Model
 
-Il modello principale contiene tre stati:
+The main model contains three states:
 
 ### start
 
-Etichette:
+Labels:
 
     {safe}
 
-Significato:
+Meaning:
 
-Il sistema è sicuro, ma non ha ancora raggiunto l'obiettivo.
+The system is safe, but it has not yet reached the objective.
 
 ### unstable
 
-Etichette:
+Labels:
 
     {}
 
-Significato:
+Meaning:
 
-Il sistema non è sicuro e non ha raggiunto l'obiettivo. È uno stato problematico.
+The system is not safe and has not reached the objective. It is a problematic state.
 
 ### goal
 
-Etichette:
+Labels:
 
     {safe, goal}
 
-Significato:
+Meaning:
 
-Il sistema ha raggiunto l'obiettivo ed è sicuro. Nel modello demo, goal è assorbente: una volta raggiunto, il sistema resta in goal.
+The system has reached the objective and is safe. In the demo model, goal is absorbing: once reached, the system remains in goal.
 
-## Azioni degli agenti
+## Agents' Actions
 
-Il Controller può scegliere:
+The Controller can choose:
 
     wait
     repair
 
-L'Environment può scegliere:
+The Environment can choose:
 
     calm
     disturb
 
-Interpretazione:
+Interpretation:
 
-- wait: il Controller non interviene;
-- repair: il Controller applica una contromisura;
-- calm: l'ambiente non disturba;
-- disturb: l'ambiente prova a disturbare il sistema.
+- wait: the Controller does not intervene;
+- repair: the Controller applies a countermeasure;
+- calm: the environment does not disturb;
+- disturb: the environment tries to disturb the system.
 
-## Transizioni del modello
+## Model Transitions
 
-Da start:
+From start:
 
     delta(start, repair, calm)    = goal
     delta(start, repair, disturb) = goal
     delta(start, wait, calm)      = start
     delta(start, wait, disturb)   = unstable
 
-Interpretazione:
+Interpretation:
 
-Da start, repair è una mossa vincente forte per il Controller, perché porta a goal sia se l'ambiente è calmo sia se l'ambiente disturba. wait è invece rischiosa: se l'ambiente disturba, il sistema diventa unstable.
+From start, repair is a strong winning move for the Controller, because it leads to goal both when the environment is calm and when the environment disturbs. wait, instead, is risky: if the environment disturbs, the system becomes unstable.
 
-Da unstable:
+From unstable:
 
     delta(unstable, repair, calm)    = start
     delta(unstable, repair, disturb) = unstable
     delta(unstable, wait, calm)      = unstable
     delta(unstable, wait, disturb)   = unstable
 
-Interpretazione:
+Interpretation:
 
-Da unstable, il Controller può recuperare solo se l'ambiente è calm. Se l'Environment continua a disturbare, il sistema resta unstable. Quindi da unstable il Controller non può forzare il raggiungimento di goal.
+From unstable, the Controller can recover only if the environment is calm. If the Environment keeps disturbing, the system remains unstable. Therefore, from unstable the Controller cannot force the achievement of goal.
 
-Da goal:
+From goal:
 
     delta(goal, repair, calm)    = goal
     delta(goal, repair, disturb) = goal
     delta(goal, wait, calm)      = goal
     delta(goal, wait, disturb)   = goal
 
-Interpretazione:
+Interpretation:
 
-Goal è assorbente. Una volta raggiunto, nessuna azione può far uscire il sistema da goal.
+Goal is absorbing. Once it is reached, no action can make the system leave goal.
 
-## Linguaggio logico supportato
+## Supported Logical Language
 
-Il progetto supporta un frammento di ATL sufficiente a esprimere le proprietà strategiche principali.
+The project supports a fragment of ATL sufficient to express the main strategic properties.
 
-Sono supportati:
+The following are supported:
 
     TRUE
     FALSE
@@ -147,215 +147,215 @@ Sono supportati:
     phi | psi
     phi -> psi
 
-Operatori strategici ATL:
+ATL strategic operators:
 
     <<A>> X phi
     <<A>> F phi
     <<A>> G phi
     <<A>> (phi U psi)
 
-Dove A è una coalizione di agenti.
+Where A is a coalition of agents.
 
-## Significato degli operatori ATL
+## Meaning of the ATL Operators
 
 ### Strategic Next
 
     <<A>> X phi
 
-Significa:
+Meaning:
 
-La coalizione A ha una scelta di azioni tale che, qualunque azione scelgano gli agenti fuori da A, il prossimo stato soddisfa phi.
+Coalition A has a choice of actions such that, whatever action is chosen by the agents outside A, the next state satisfies phi.
 
 ### Strategic Eventually
 
     <<A>> F phi
 
-Significa:
+Meaning:
 
-La coalizione A ha una strategia per forzare prima o poi uno stato che soddisfa phi, qualunque cosa facciano gli agenti esterni alla coalizione.
+Coalition A has a strategy to eventually force a state satisfying phi, whatever the agents outside the coalition do.
 
 ### Strategic Always
 
     <<A>> G phi
 
-Significa:
+Meaning:
 
-La coalizione A ha una strategia per mantenere phi vero per sempre.
+Coalition A has a strategy to keep phi true forever.
 
 ### Strategic Until
 
     <<A>> (phi U psi)
 
-Significa:
+Meaning:
 
-La coalizione A ha una strategia per forzare prima o poi psi, mantenendo phi vero fino al raggiungimento di psi.
+Coalition A has a strategy to eventually force psi while keeping phi true until psi is reached.
 
-## Operatore centrale: strategic predecessor
+## Core Operator: Strategic Predecessor
 
-Il cuore teorico del progetto è l'operatore di predecessore strategico:
+The theoretical core of the project is the strategic predecessor operator:
 
     Pre_A(X)
 
-Uno stato s appartiene a Pre_A(X) se e solo se la coalizione A possiede una joint action tale che, per ogni possibile joint action degli agenti esterni ad A, il prossimo stato appartiene a X.
+A state s belongs to Pre_A(X) if and only if coalition A has a joint action such that, for every possible joint action of the agents outside A, the next state belongs to X.
 
-Formalmente:
+Formally:
 
     s in Pre_A(X)
     iff
     exists alpha_A such that for all alpha_not_A:
         delta(s, alpha_A union alpha_not_A) in X
 
-Questa formula esprime la differenza fondamentale tra CTL e ATL.
+This formula expresses the fundamental difference between CTL and ATL.
 
-In CTL si avrebbe una quantificazione sui cammini. In ATL si ha una quantificazione strategica sulle scelte degli agenti.
+In CTL, there is quantification over paths. In ATL, there is strategic quantification over the choices of agents.
 
-## Fixed point utilizzati
+## Fixed Points Used
 
-Gli operatori temporali strategici sono implementati tramite fixed point.
+The strategic temporal operators are implemented through fixed points.
 
 ### <<A>> F phi
 
-Strategic eventually viene calcolato come least fixed point.
+Strategic eventually is computed as a least fixed point.
 
-Si parte dagli stati in cui phi è già vero. Poi si aggiungono iterativamente gli stati da cui la coalizione A può forzare l'ingresso nell'insieme corrente.
+The computation starts from the states where phi is already true. Then, the algorithm iteratively adds the states from which coalition A can force entry into the current set.
 
 ### <<A>> G phi
 
-Strategic always viene calcolato come greatest fixed point.
+Strategic always is computed as a greatest fixed point.
 
-Si parte dagli stati in cui phi è vero. Poi si rimuovono iterativamente gli stati da cui la coalizione A non riesce a rimanere dentro l'insieme candidato.
+The computation starts from the states where phi is true. Then, the algorithm iteratively removes the states from which coalition A cannot remain inside the candidate set.
 
 ### <<A>> (phi U psi)
 
-Strategic until viene calcolato come least fixed point.
+Strategic until is computed as a least fixed point.
 
-Si parte dagli stati in cui psi è già vero. Poi si aggiungono gli stati in cui phi è vero e da cui la coalizione A può forzare l'ingresso nell'insieme già vincente.
+The computation starts from the states where psi is already true. Then, the algorithm adds the states where phi is true and from which coalition A can force entry into the already winning set.
 
-## Proprietà verificate nella demo
+## Properties Verified in the Demo
 
-### 1. Controller può forzare goal al prossimo passo
+### 1. The Controller can force goal in the next step
 
 Formula:
 
     <<Controller>> X goal
 
-Risultato atteso:
+Expected result:
 
     true in start
 
-Motivo:
+Reason:
 
-Da start, il Controller può scegliere repair. Se Environment sceglie calm si va in goal. Se Environment sceglie disturb si va comunque in goal.
+From start, the Controller can choose repair. If Environment chooses calm, the system goes to goal. If Environment chooses disturb, the system still goes to goal.
 
-Quindi repair è una mossa vincente in un passo.
+Therefore, repair is a winning move in one step.
 
-### 2. Controller può forzare goal prima o poi
+### 2. The Controller can eventually force goal
 
 Formula:
 
     <<Controller>> F goal
 
-Risultato atteso:
+Expected result:
 
     true in start
 
-Motivo:
+Reason:
 
-Poiché il Controller può già forzare goal in un passo da start, può certamente forzarlo eventualmente.
+Since the Controller can already force goal in one step from start, it can certainly force it eventually.
 
-La strategia testimone è:
+The witness strategy is:
 
     start -> repair
 
-### 3. Controller può mantenere safe per sempre
+### 3. The Controller can keep safe forever
 
 Formula:
 
     <<Controller>> G safe
 
-Risultato atteso:
+Expected result:
 
     true in start
 
-Motivo:
+Reason:
 
-Da start, scegliendo repair, il Controller forza il passaggio a goal. Goal è safe ed è assorbente. Quindi safe può essere mantenuto per sempre.
+From start, by choosing repair, the Controller forces the transition to goal. goal is safe and absorbing. Therefore, safe can be maintained forever.
 
-### 4. Controller può mantenere safe fino al goal
+### 4. The Controller can keep safe until goal
 
 Formula:
 
     <<Controller>> (safe U goal)
 
-Risultato atteso:
+Expected result:
 
     true in start
 
-Motivo:
+Reason:
 
-Da start, safe è vero. Il Controller sceglie repair e raggiunge goal immediatamente. Quindi safe rimane vero fino al raggiungimento di goal.
+From start, safe is true. The Controller chooses repair and reaches goal immediately. Therefore, safe remains true until goal is reached.
 
-### 5. Environment può forzare uno stato non safe?
+### 5. Can the Environment force a non-safe state?
 
 Formula:
 
     <<Environment>> F !safe
 
-Risultato atteso:
+Expected result:
 
     false in start
 
-Motivo:
+Reason:
 
-Environment vorrebbe portare il sistema in unstable. Tuttavia, da start, se il Controller sceglie repair, il sistema va in goal indipendentemente dal disturbo. Quindi Environment non può forzare !safe contro tutte le possibili azioni del Controller.
+Environment would like to bring the system to unstable. However, from start, if the Controller chooses repair, the system goes to goal regardless of the disturbance. Therefore, Environment cannot force !safe against all possible actions of the Controller.
 
-### 6. Environment può mantenere goal falso per sempre?
+### 6. Can the Environment keep goal false forever?
 
 Formula:
 
     <<Environment>> G !goal
 
-Risultato atteso:
+Expected result:
 
     false in start
     true in unstable
 
-Motivo:
+Reason:
 
-Da start il Controller può scegliere repair e raggiungere goal. Quindi Environment non può impedire goal per sempre.
+From start, the Controller can choose repair and reach goal. Therefore, Environment cannot prevent goal forever.
 
-Da unstable, invece, Environment può scegliere sempre disturb e mantenere il sistema in unstable, dove goal è falso.
+From unstable, instead, Environment can always choose disturb and keep the system in unstable, where goal is false.
 
-### 7. Stati safe da cui Controller può forzare goal
+### 7. Safe states from which the Controller can force goal
 
 Formula:
 
     safe & <<Controller>> F goal
 
-Risultato atteso:
+Expected result:
 
     {start, goal}
 
-Motivo:
+Reason:
 
-start è safe e il Controller può forzare goal. goal è già safe ed è già goal. unstable non è safe.
+start is safe and the Controller can force goal. goal is already safe and is already goal. unstable is not safe.
 
-## Strategy extraction
+## Strategy Extraction
 
-Il progetto non si limita a dire se una formula è vera o falsa. Per le formule strategiche può anche estrarre una strategia testimone.
+The project does not only state whether a formula is true or false. For strategic formulas, it can also extract a witness strategy.
 
-Esempio:
+Example:
 
     <<Controller>> F goal
 
-Strategia:
+Strategy:
 
     start -> {Controller: repair}
     goal  -> objective already satisfied
 
-Questo mostra il lato costruttivo del model checking ATL: quando una proprietà strategica è vera, il programma può mostrare come la coalizione può garantirla.
+This shows the constructive side of ATL model checking: when a strategic property is true, the program can show how the coalition can guarantee it.
 
-## Struttura del progetto
+## Project Structure
 
     atl-model-checker/
     |
@@ -379,65 +379,65 @@ Questo mostra il lato costruttivo del model checking ATL: quando una proprietà 
     |-- README.md
     |-- requirements.txt
 
-## Descrizione dei file
+## File Description
 
 ### model/game_structure.py
 
-Definisce la Concurrent Game Structure. Gestisce stati, agenti, azioni, transizioni, labeling e totalità della relazione di transizione.
+Defines the Concurrent Game Structure. It manages states, agents, actions, transitions, labeling and totality of the transition relation.
 
 ### logic/ast.py
 
-Definisce le classi che rappresentano le formule logiche come alberi sintattici astratti.
+Defines the classes that represent logical formulas as abstract syntax trees.
 
 ### logic/parser.py
 
-Trasforma formule scritte come stringhe in oggetti AST.
+Transforms formulas written as strings into AST objects.
 
-Esempio:
+Example:
 
     <<Controller>> F goal
 
-viene trasformata in una formula StrategicEventually con coalizione Controller e obiettivo Atom(goal).
+is transformed into a StrategicEventually formula with coalition Controller and objective Atom(goal).
 
 ### model_checker/atl_checker.py
 
-Contiene la semantica del linguaggio. Calcola gli stati che soddisfano una formula e implementa gli operatori ATL tramite strategic predecessor e fixed point.
+Contains the semantics of the language. It computes the states that satisfy a formula and implements the ATL operators through strategic predecessor and fixed points.
 
 ### examples/controller_env.py
 
-Costruisce il modello dimostrativo Controller vs Environment.
+Builds the demonstration model Controller vs Environment.
 
 ### tests/test_atl_checker.py
 
-Contiene test automatici per verificare coerenza tra modello, parser, AST, checker e strategy extraction.
+Contains automatic tests to verify consistency between the model, parser, AST, checker and strategy extraction.
 
 ### main.py
 
-Esegue la demo, stampa gli stati, gli agenti, i risultati delle formule e le strategie testimoni.
+Runs the demo, prints the states, the agents, the results of the formulas and the witness strategies.
 
-## Come eseguire
+## How to Run
 
-Dalla cartella principale del progetto:
+From the main project folder:
 
     python main.py
 
-Per eseguire i test:
+To run the tests:
 
     python -m unittest discover -s tests
 
-## Output atteso
+## Expected Output
 
-L'output mostra:
+The output shows:
 
-- gli stati del modello;
-- gli agenti;
-- le formule verificate;
-- la formula parsata;
-- l'insieme degli stati soddisfacenti;
-- il risultato nello stato iniziale start;
-- una strategia testimone, se disponibile.
+- the states of the model;
+- the agents;
+- the verified formulas;
+- the parsed formula;
+- the set of satisfying states;
+- the result in the initial state start;
+- a witness strategy, when available.
 
-Esempio:
+Example:
 
     Formula: <<Controller>> F goal
     Parsed : <<Controller>> F (goal)
@@ -447,10 +447,10 @@ Esempio:
     - goal: objective already satisfied
     - start: choose {'Controller': 'repair'}
 
-## Conclusione
+## Conclusion
 
-Il progetto mostra un frammento essenziale ma formalmente significativo di ATL model checking. La demo evidenzia la differenza tra possibilità e garanzia strategica.
+The project shows an essential but formally meaningful fragment of ATL model checking. The demo highlights the difference between possibility and strategic guarantee.
 
-Il risultato principale è che il Controller può forzare il raggiungimento del goal e mantenere la sicurezza da start, mentre l'Environment non può forzare uno stato unsafe da start. Questo dimostra che il sistema non viene analizzato solo come grafo di transizioni, ma come gioco tra agenti con strategie.
+The main result is that the Controller can force the achievement of goal and maintain safety from start, while the Environment cannot force an unsafe state from start. This demonstrates that the system is not analyzed only as a transition graph, but as a game between agents with strategies.
 
-Il progetto è quindi un prototipo compatto di symbolic AI applicata alla verifica formale di sistemi multi-agente.
+The project is therefore a compact prototype of symbolic AI applied to the formal verification of multi-agent systems.
