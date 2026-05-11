@@ -25,6 +25,9 @@ classifiers = [
   "Topic :: Software Development :: Testing"
 ]
 
+[tool.setuptools]
+py-modules = ["cli"]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["model*", "logic*", "model_checker*"]
@@ -41,3 +44,6 @@ target-version = ["py310"]
 [tool.ruff]
 line-length = 88
 target-version = "py310"
+
+[project.scripts]
+atl-check = "cli:main"
