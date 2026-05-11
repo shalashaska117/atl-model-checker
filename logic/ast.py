@@ -21,6 +21,7 @@ class Formula:
     """
     Base class for all formulas.
     """
+
     pass
 
 

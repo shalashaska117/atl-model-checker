@@ -146,7 +146,9 @@ class ATLModelChecker:
         if isinstance(formula, StrategicUntil):
             return self._extract_strategy_until(formula)
 
-        raise TypeError("Strategy extraction is only defined for strategic ATL formulas")
+        raise TypeError(
+            "Strategy extraction is only defined for strategic ATL formulas"
+        )
 
     # Computes satisfaction set for TRUE or FALSE.
     #
@@ -264,8 +266,7 @@ class ATLModelChecker:
             # Add states from which coalition A can force a transition
             # into the current winning region.
             predecessors = self._strategic_predecessor(
-                formula.coalition,
-                winning_states
+                formula.coalition, winning_states
             )
 
             new_winning_states = winning_states | predecessors
@@ -298,8 +299,7 @@ class ATLModelChecker:
             changed = False
 
             predecessors = self._strategic_predecessor(
-                formula.coalition,
-                winning_states
+                formula.coalition, winning_states
             )
 
             new_winning_states = invariant_states & predecessors
@@ -333,8 +333,7 @@ class ATLModelChecker:
             changed = False
 
             predecessors = self._strategic_predecessor(
-                formula.coalition,
-                winning_states
+                formula.coalition, winning_states
             )
 
             new_winning_states = winning_states | (left_states & predecessors)
@@ -359,11 +358,7 @@ class ATLModelChecker:
         strategy = {}
 
         for state in satisfying_states:
-            action = self.get_winning_action(
-                state,
-                formula.coalition,
-                target_states
-            )
+            action = self.get_winning_action(state, formula.coalition, target_states)
             strategy[state] = action
 
         return strategy
@@ -392,9 +387,7 @@ class ATLModelChecker:
                     continue
 
                 action = self.get_winning_action(
-                    state,
-                    formula.coalition,
-                    winning_states
+                    state, formula.coalition, winning_states
                 )
 
                 if action is not None:
@@ -418,11 +411,7 @@ class ATLModelChecker:
         # Once the greatest fixed point is computed, every winning state must have
         # a coalition action that keeps the game inside the winning region.
         for state in sorted(winning_states):
-            action = self.get_winning_action(
-                state,
-                formula.coalition,
-                winning_states
-            )
+            action = self.get_winning_action(state, formula.coalition, winning_states)
             strategy[state] = action
 
         return strategy
@@ -456,9 +445,7 @@ class ATLModelChecker:
                     continue
 
                 action = self.get_winning_action(
-                    state,
-                    formula.coalition,
-                    winning_states
+                    state, formula.coalition, winning_states
                 )
 
                 if action is not None:
@@ -533,14 +520,10 @@ class ATLModelChecker:
 
             for opponent_action in opponent_joint_actions:
                 complete_joint_action = self.model.merge_joint_actions(
-                    coalition_action,
-                    opponent_action
+                    coalition_action, opponent_action
                 )
 
-                next_state = self.model.get_next_state(
-                    state,
-                    complete_joint_action
-                )
+                next_state = self.model.get_next_state(state, complete_joint_action)
 
                 if next_state not in target_states:
                     action_is_winning = False

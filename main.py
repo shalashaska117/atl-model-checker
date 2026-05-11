@@ -141,7 +141,7 @@ def main():
     print_boolean_result(
         checker,
         "Safe states from which Controller can force goal",
-        "safe & <<Controller>> F goal"
+        "safe & <<Controller>> F goal",
     )
 
 

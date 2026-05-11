@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atl-model-checker"
+version = "0.1.0"
+description = "An educational explicit-state ATL model checker for Concurrent Game Structures"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Pietro Pellegrino" }
+]
+keywords = [
+  "ATL",
+  "model checking",
+  "formal methods",
+  "multi-agent systems",
+  "strategic reasoning",
+  "concurrent game structures"
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Software Development :: Testing"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["model*", "logic*", "model_checker*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"

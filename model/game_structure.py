@@ -113,7 +113,9 @@ class ConcurrentGameStructure:
             raise ValueError(f"Unknown target state: {next_state}")
 
         if set(joint_action.keys()) != self.agents:
-            raise ValueError("A transition must specify exactly one action for each agent")
+            raise ValueError(
+                "A transition must specify exactly one action for each agent"
+            )
 
         for agent, action in joint_action.items():
             available_actions = self.get_actions(state, agent)
@@ -173,7 +175,9 @@ class ConcurrentGameStructure:
         key = (state, self._normalize_joint_action(joint_action))
 
         if key not in self.transitions:
-            raise ValueError(f"Missing transition from {state} with joint action {joint_action}")
+            raise ValueError(
+                f"Missing transition from {state} with joint action {joint_action}"
+            )
 
         return self.transitions[key]
 
@@ -269,7 +273,9 @@ class ConcurrentGameStructure:
                     missing.append((state, joint_action))
 
         if missing:
-            raise ValueError(f"The transition relation is not total. Missing: {missing}")
+            raise ValueError(
+                f"The transition relation is not total. Missing: {missing}"
+            )
 
     # Converts a joint action dictionary into a canonical hashable representation.
     #
