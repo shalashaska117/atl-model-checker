@@ -49,70 +49,44 @@ def build_controller_environment_model():
     # From start:
     # Controller can force goal by choosing repair.
     model.add_transition(
-        "start",
-        {"Controller": "repair", "Environment": "calm"},
-        "goal"
+        "start", {"Controller": "repair", "Environment": "calm"}, "goal"
     )
     model.add_transition(
-        "start",
-        {"Controller": "repair", "Environment": "disturb"},
-        "goal"
+        "start", {"Controller": "repair", "Environment": "disturb"}, "goal"
     )
     model.add_transition(
-        "start",
-        {"Controller": "wait", "Environment": "calm"},
-        "start"
+        "start", {"Controller": "wait", "Environment": "calm"}, "start"
     )
     model.add_transition(
-        "start",
-        {"Controller": "wait", "Environment": "disturb"},
-        "unstable"
+        "start", {"Controller": "wait", "Environment": "disturb"}, "unstable"
     )
 
     # From unstable:
     # Controller cannot force immediate recovery if Environment keeps disturbing.
     model.add_transition(
-        "unstable",
-        {"Controller": "repair", "Environment": "calm"},
-        "start"
+        "unstable", {"Controller": "repair", "Environment": "calm"}, "start"
     )
     model.add_transition(
-        "unstable",
-        {"Controller": "repair", "Environment": "disturb"},
-        "unstable"
+        "unstable", {"Controller": "repair", "Environment": "disturb"}, "unstable"
     )
     model.add_transition(
-        "unstable",
-        {"Controller": "wait", "Environment": "calm"},
-        "unstable"
+        "unstable", {"Controller": "wait", "Environment": "calm"}, "unstable"
     )
     model.add_transition(
-        "unstable",
-        {"Controller": "wait", "Environment": "disturb"},
-        "unstable"
+        "unstable", {"Controller": "wait", "Environment": "disturb"}, "unstable"
     )
 
     # From goal:
     # The goal state is absorbing.
     model.add_transition(
-        "goal",
-        {"Controller": "repair", "Environment": "calm"},
-        "goal"
+        "goal", {"Controller": "repair", "Environment": "calm"}, "goal"
     )
     model.add_transition(
-        "goal",
-        {"Controller": "repair", "Environment": "disturb"},
-        "goal"
+        "goal", {"Controller": "repair", "Environment": "disturb"}, "goal"
     )
+    model.add_transition("goal", {"Controller": "wait", "Environment": "calm"}, "goal")
     model.add_transition(
-        "goal",
-        {"Controller": "wait", "Environment": "calm"},
-        "goal"
-    )
-    model.add_transition(
-        "goal",
-        {"Controller": "wait", "Environment": "disturb"},
-        "goal"
+        "goal", {"Controller": "wait", "Environment": "disturb"}, "goal"
     )
 
     model.validate_totality()

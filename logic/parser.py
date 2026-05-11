@@ -122,8 +122,7 @@ class ATLParser:
         ]
 
         combined_regex = "|".join(
-            f"(?P<{name}>{pattern})"
-            for name, pattern in token_specification
+            f"(?P<{name}>{pattern})" for name, pattern in token_specification
         )
 
         tokens = []
