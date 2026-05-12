@@ -37,6 +37,8 @@ a mapping from states to coalition actions. This is useful because it shows not 
 that a property is true, but also how the coalition can enforce it.
 """
 
+from model_checker.strategy_result import StrategyResult
+
 from logic.ast import (
     And,
     Atom,
@@ -120,6 +122,29 @@ class ATLModelChecker:
             raise ValueError(f"Unknown state: {state}")
 
         return state in self.sat(formula)
+
+    def extract_strategy_result(self, formula):
+        """
+        Extract a structured witness strategy result for a strategic ATL formula.
+
+        The older extract_strategy method returns only a raw dictionary.
+        This method wraps the extracted strategy together with useful metadata:
+        the original formula, the coalition, and the set of satisfying states.
+        """
+        if not hasattr(formula, "coalition"):
+            raise TypeError(
+                "Strategy result extraction is only defined for strategic ATL formulas"
+            )
+
+        satisfying_states = self.sat(formula)
+        strategy = self.extract_strategy(formula)
+
+        return StrategyResult(
+            formula=formula,
+            coalition=frozenset(formula.coalition),
+            satisfying_states=frozenset(satisfying_states),
+            strategy=strategy,
+        )
 
     # Extracts a witness strategy for a strategic ATL formula.
     #

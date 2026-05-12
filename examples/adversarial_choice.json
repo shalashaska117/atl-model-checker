@@ -1,0 +1,132 @@
+{
+  "agents": [
+    "Controller",
+    "Environment"
+  ],
+  "states": [
+    "start",
+    "goal",
+    "trap"
+  ],
+  "initial": "start",
+  "actions": {
+    "Controller": [
+      "safe",
+      "risky"
+    ],
+    "Environment": [
+      "allow",
+      "block"
+    ]
+  },
+  "labels": {
+    "start": [
+      "safe"
+    ],
+    "goal": [
+      "safe",
+      "goal"
+    ],
+    "trap": [
+      "bad"
+    ]
+  },
+  "transitions": [
+    {
+      "from": "start",
+      "joint_action": {
+        "Controller": "safe",
+        "Environment": "allow"
+      },
+      "to": "start"
+    },
+    {
+      "from": "start",
+      "joint_action": {
+        "Controller": "safe",
+        "Environment": "block"
+      },
+      "to": "start"
+    },
+    {
+      "from": "start",
+      "joint_action": {
+        "Controller": "risky",
+        "Environment": "allow"
+      },
+      "to": "goal"
+    },
+    {
+      "from": "start",
+      "joint_action": {
+        "Controller": "risky",
+        "Environment": "block"
+      },
+      "to": "trap"
+    },
+    {
+      "from": "goal",
+      "joint_action": {
+        "Controller": "safe",
+        "Environment": "allow"
+      },
+      "to": "goal"
+    },
+    {
+      "from": "goal",
+      "joint_action": {
+        "Controller": "safe",
+        "Environment": "block"
+      },
+      "to": "goal"
+    },
+    {
+      "from": "goal",
+      "joint_action": {
+        "Controller": "risky",
+        "Environment": "allow"
+      },
+      "to": "goal"
+    },
+    {
+      "from": "goal",
+      "joint_action": {
+        "Controller": "risky",
+        "Environment": "block"
+      },
+      "to": "goal"
+    },
+    {
+      "from": "trap",
+      "joint_action": {
+        "Controller": "safe",
+        "Environment": "allow"
+      },
+      "to": "trap"
+    },
+    {
+      "from": "trap",
+      "joint_action": {
+        "Controller": "safe",
+        "Environment": "block"
+      },
+      "to": "trap"
+    },
+    {
+      "from": "trap",
+      "joint_action": {
+        "Controller": "risky",
+        "Environment": "allow"
+      },
+      "to": "trap"
+    },
+    {
+      "from": "trap",
+      "joint_action": {
+        "Controller": "risky",
+        "Environment": "block"
+      },
+      "to": "trap"
+    }
+  ]
+}

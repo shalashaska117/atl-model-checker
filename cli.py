@@ -49,14 +49,16 @@ def main():
 
     if args.strategy:
         try:
-            strategy = checker.extract_strategy(formula)
+            result = checker.extract_strategy_result(formula)
         except TypeError as error:
             print(f"Witness strategy: unavailable ({error})")
             return
 
         print("Witness strategy:")
-        for state in sorted(strategy):
-            action = strategy[state]
+        print(f"Coalition: {sorted(result.coalition)}")
+
+        for state in sorted(result.strategy):
+            action = result.strategy[state]
             if action is None:
                 print(f"  {state}: objective already satisfied")
             else:
