@@ -1,0 +1,130 @@
+{
+  "agents": [
+    "Controller",
+    "Environment"
+  ],
+  "states": [
+    "start",
+    "unstable",
+    "goal"
+  ],
+  "initial": "start",
+  "actions": {
+    "Controller": [
+      "wait",
+      "repair"
+    ],
+    "Environment": [
+      "calm",
+      "disturb"
+    ]
+  },
+  "labels": {
+    "start": [
+      "safe"
+    ],
+    "unstable": [],
+    "goal": [
+      "safe",
+      "goal"
+    ]
+  },
+  "transitions": [
+    {
+      "from": "start",
+      "joint_action": {
+        "Controller": "repair",
+        "Environment": "calm"
+      },
+      "to": "goal"
+    },
+    {
+      "from": "start",
+      "joint_action": {
+        "Controller": "repair",
+        "Environment": "disturb"
+      },
+      "to": "goal"
+    },
+    {
+      "from": "start",
+      "joint_action": {
+        "Controller": "wait",
+        "Environment": "calm"
+      },
+      "to": "start"
+    },
+    {
+      "from": "start",
+      "joint_action": {
+        "Controller": "wait",
+        "Environment": "disturb"
+      },
+      "to": "unstable"
+    },
+    {
+      "from": "unstable",
+      "joint_action": {
+        "Controller": "repair",
+        "Environment": "calm"
+      },
+      "to": "start"
+    },
+    {
+      "from": "unstable",
+      "joint_action": {
+        "Controller": "repair",
+        "Environment": "disturb"
+      },
+      "to": "unstable"
+    },
+    {
+      "from": "unstable",
+      "joint_action": {
+        "Controller": "wait",
+        "Environment": "calm"
+      },
+      "to": "unstable"
+    },
+    {
+      "from": "unstable",
+      "joint_action": {
+        "Controller": "wait",
+        "Environment": "disturb"
+      },
+      "to": "unstable"
+    },
+    {
+      "from": "goal",
+      "joint_action": {
+        "Controller": "repair",
+        "Environment": "calm"
+      },
+      "to": "goal"
+    },
+    {
+      "from": "goal",
+      "joint_action": {
+        "Controller": "repair",
+        "Environment": "disturb"
+      },
+      "to": "goal"
+    },
+    {
+      "from": "goal",
+      "joint_action": {
+        "Controller": "wait",
+        "Environment": "calm"
+      },
+      "to": "goal"
+    },
+    {
+      "from": "goal",
+      "joint_action": {
+        "Controller": "wait",
+        "Environment": "disturb"
+      },
+      "to": "goal"
+    }
+  ]
+}
